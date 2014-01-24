@@ -17,7 +17,8 @@ PROFILES_PATH = File.join ROOT_FOLDER, 'profiles'
 BIN_PATH = File.join ROOT_FOLDER, 'build'
 DEFAULT_INPUT_FORMAT = 'osm'
 DEFAULT_ORIGIN = [1,1]
-
+LAUNCH_TIMEOUT = 1
+SHUTDOWN_TIMEOUT = 1
 
 puts "Ruby version #{RUBY_VERSION}"
 unless RUBY_VERSION.to_f >= 1.9
@@ -47,4 +48,8 @@ end
 
 AfterConfiguration do |config|
   clear_log_files
+end
+
+at_exit do
+  OSRMLoader.shutdown
 end
