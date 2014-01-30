@@ -49,11 +49,13 @@ class OSRMLoader
 
   def self.osrm_up
     return if self.osrm_up?
+    puts '=== launching osrm'
     @@pid = Process.spawn("#{BIN_PATH}/osrm-routed --sharedmemory=1 --port #{OSRM_PORT}",:out=>OSRM_ROUTED_LOG_FILE, :err=>OSRM_ROUTED_LOG_FILE)
   end
 
   def self.osrm_down
     if @@pid
+    puts '=== shutting down osrm'
       Process.kill 'TERM', @@pid
       self.wait_for_shutdown
     end
@@ -61,6 +63,7 @@ class OSRMLoader
 
   def self.kill
     if @@pid
+      puts '=== killing osrm'
       Process.kill 'KILL', @@pid
     end
   end
