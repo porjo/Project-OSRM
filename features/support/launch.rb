@@ -42,7 +42,7 @@ class OSRMLoader
 
   def self.osrm_up?
     if @@pid
-      s = `ps -o state -p #{@@pid} --no-headers`.strip
+      s = `ps -o state -p #{@@pid}`.split[1].to_s.strip
       up = (s =~ /^[DRST]/) != nil
       puts "=== osrm-routed, status pid #{@@pid}: #{s} (#{up ? 'up' : 'down'})"
       up
