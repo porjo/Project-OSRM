@@ -53,8 +53,10 @@ class OSRMLoader
 
   def self.osrm_up
     return if self.osrm_up?
-    print '=== launching osrm... '
+    puts '=== launching osrm... '
+    puts "Time before starting osrm-routed:      #{Time.now.to_f}"
     @@pid = Process.spawn("#{BIN_PATH}/osrm-routed --sharedmemory=1 --port #{OSRM_PORT}",:out=>OSRM_ROUTED_LOG_FILE, :err=>OSRM_ROUTED_LOG_FILE)
+    puts "Time after starting osrm-routed in bg: #{Time.now.to_f}"
     puts "pid=#{@@pid}"
   end
 
