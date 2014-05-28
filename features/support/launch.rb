@@ -9,13 +9,14 @@ class OSRMLoader
   def self.load input_file, &block
     @input_file = input_file
     Dir.chdir TEST_FOLDER do
-      self.load_data
       self.launch unless @@pid
+      self.load_data
       yield
     end
   end
   
   def self.load_data
+    puts "=== running osrm-datastore"
     puts "Time before running osrm-datastore: #{Time.now.to_f}"
     self.osrm_up?
     `#{BIN_PATH}/osrm-datastore #{@input_file}`
@@ -44,7 +45,7 @@ class OSRMLoader
     if @@pid
       s = `ps -o state -p #{@@pid}`.split[1].to_s.strip
       up = (s =~ /^[DRST]/) != nil
-      puts "=== osrm-routed, status pid #{@@pid}: #{s} (#{up ? 'up' : 'down'})"
+ #     puts "=== osrm-routed, status pid #{@@pid}: #{s} (#{up ? 'up' : 'down'})"
       up
     else
       false
@@ -53,11 +54,10 @@ class OSRMLoader
 
   def self.osrm_up
     return if self.osrm_up?
-    puts '=== launching osrm... '
-    puts "Time before starting osrm-routed:      #{Time.now.to_f}"
+    puts "=== launching osrm-routed"
+    puts "Time before starting osrm-routed:   #{Time.now.to_f}"
     @@pid = Process.spawn("#{BIN_PATH}/osrm-routed --sharedmemory=1 --port #{OSRM_PORT}",:out=>OSRM_ROUTED_LOG_FILE, :err=>OSRM_ROUTED_LOG_FILE)
-    puts "Time after starting osrm-routed in bg: #{Time.now.to_f}"
-    puts "pid=#{@@pid}"
+    puts "Time after starting osrm-routed:    #{Time.now.to_f}"
   end
 
   def self.osrm_down
