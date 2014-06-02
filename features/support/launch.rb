@@ -9,8 +9,8 @@ class OSRMLoader
   def self.load input_file, &block
     @input_file = input_file
     Dir.chdir TEST_FOLDER do
-      self.launch unless @@pid
       self.load_data
+      self.launch unless @@pid
       yield
     end
   end
