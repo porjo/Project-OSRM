@@ -4,7 +4,7 @@ Feature: Temporary tests related to osrm-datastore
     Background:
         Given the profile "testbot"
 
-    Scenario: A single way with two nodes
+    Scenario: Scenario ab
         Given the node map
             | a | b |
 
@@ -17,7 +17,7 @@ Feature: Temporary tests related to osrm-datastore
             | a    | b  | ab    |
             | b    | a  | ab    |
 
-    Scenario: A single way with two nodes
+    Scenario: Scenaria xy
         Given the node map
             | x | y |
 
