@@ -22,7 +22,7 @@ SHUTDOWN_TIMEOUT = 1
 
 
 def log_time_and_run cmd
-  log cmd
+  log_time cmd
   `#{cmd}`
 end
 
