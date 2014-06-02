@@ -4,7 +4,17 @@ require 'open3'
 OSRM_ROUTED_LOG_FILE = 'osrm-routed.log'
 
 class OSRMLoader
+  
   @@pid = nil
+  
+  def self.cmd cmd
+    log cmd
+    `#{cmd}`
+  end
+
+  def self.log cmd
+    puts "[#{Time.now.strftime('%Y-%m-%d %H:%M:%S:%L')}] #{cmd}"
+  end
   
   def self.load input_file, &block
     @input_file = input_file
@@ -16,11 +26,9 @@ class OSRMLoader
   end
   
   def self.load_data
-    puts "=== running osrm-datastore"
-    puts "Time before running osrm-datastore: #{Time.now.to_f}"
-    `#{BIN_PATH}/osrm-datastore --springclean`
-    `#{BIN_PATH}/osrm-datastore #{@input_file}`
-    puts "Time after running osrm-datastore:  #{Time.now.to_f}"
+    puts "=== loading data with osrm-datastore"
+    self.cmd "#{BIN_PATH}/osrm-datastore --springclean"
+    self.cmd "#{BIN_PATH}/osrm-datastore #{@input_file}"
   end
 
   def self.launch
@@ -55,14 +63,14 @@ class OSRMLoader
   def self.osrm_up
     return if self.osrm_up?
     puts "=== launching osrm-routed"
-    puts "Time before starting osrm-routed:   #{Time.now.to_f}"
+    log %[Process.spawn("#{BIN_PATH}/osrm-routed --sharedmemory=1 --port #{OSRM_PORT}",:out=>'#{OSRM_ROUTED_LOG_FILE}', :err=>'#{OSRM_ROUTED_LOG_FILE}')]
     @@pid = Process.spawn("#{BIN_PATH}/osrm-routed --sharedmemory=1 --port #{OSRM_PORT}",:out=>OSRM_ROUTED_LOG_FILE, :err=>OSRM_ROUTED_LOG_FILE)
-    puts "Time after starting osrm-routed:    #{Time.now.to_f}"
   end
 
   def self.osrm_down
     if @@pid
     puts '=== shutting down osrm'
+      self.log "Process.kill 'TERM', #{@@pid}"
       Process.kill 'TERM', @@pid
       self.wait_for_shutdown
     end
@@ -71,6 +79,7 @@ class OSRMLoader
   def self.kill
     if @@pid
       puts '=== killing osrm'
+      self.log "Process.kill 'KILL', @@pid"
       Process.kill 'KILL', @@pid
     end
   end
@@ -78,6 +87,7 @@ class OSRMLoader
   def self.wait_for_connection
     while true
       begin
+        self.log "TCPSocket.new('localhost', OSRM_PORT)"
         socket = TCPSocket.new('localhost', OSRM_PORT)
         return
       rescue Errno::ECONNREFUSED
