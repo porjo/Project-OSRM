@@ -6,16 +6,7 @@ OSRM_ROUTED_LOG_FILE = 'osrm-routed.log'
 class OSRMLoader
   
   @@pid = nil
-  
-  def self.cmd cmd
-    log cmd
-    `#{cmd}`
-  end
-
-  def self.log cmd
-    puts "[#{Time.now.strftime('%Y-%m-%d %H:%M:%S:%L')}] #{cmd}"
-  end
-  
+    
   def self.load input_file, &block
     @input_file = input_file
     Dir.chdir TEST_FOLDER do
@@ -27,8 +18,8 @@ class OSRMLoader
   
   def self.load_data
     puts "=== loading data with osrm-datastore"
-    self.cmd "#{BIN_PATH}/osrm-datastore --springclean"
-    self.cmd "#{BIN_PATH}/osrm-datastore #{@input_file}"
+    log_time_and_run "#{BIN_PATH}/osrm-datastore --springclean"
+    log_time_and_run "#{BIN_PATH}/osrm-datastore #{@input_file}"
   end
 
   def self.launch
@@ -70,7 +61,7 @@ class OSRMLoader
   def self.osrm_down
     if @@pid
     puts '=== shutting down osrm'
-      self.log "Process.kill 'TERM', #{@@pid}"
+      log_time "Process.kill 'TERM', #{@@pid}"
       Process.kill 'TERM', @@pid
       self.wait_for_shutdown
     end
@@ -79,7 +70,7 @@ class OSRMLoader
   def self.kill
     if @@pid
       puts '=== killing osrm'
-      self.log "Process.kill 'KILL', @@pid"
+      log_time "Process.kill 'KILL', @@pid"
       Process.kill 'KILL', @@pid
     end
   end
@@ -87,7 +78,7 @@ class OSRMLoader
   def self.wait_for_connection
     while true
       begin
-        self.log "TCPSocket.new('localhost', OSRM_PORT)"
+        log_time "TCPSocket.new('localhost', OSRM_PORT)"
         socket = TCPSocket.new('localhost', OSRM_PORT)
         return
       rescue Errno::ECONNREFUSED

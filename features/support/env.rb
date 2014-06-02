@@ -20,6 +20,19 @@ DEFAULT_ORIGIN = [1,1]
 LAUNCH_TIMEOUT = 1
 SHUTDOWN_TIMEOUT = 1
 
+
+def log_time_and_run cmd
+  log cmd
+  `#{cmd}`
+end
+
+def log_time cmd
+  puts "[#{Time.now.strftime('%Y-%m-%d %H:%M:%S:%L')}] #{cmd}"
+end
+
+
+
+
 puts "Ruby version #{RUBY_VERSION}"
 unless RUBY_VERSION.to_f >= 1.9
   raise "*** Please upgrade to Ruby 1.9.x to run the OSRM cucumber tests"
