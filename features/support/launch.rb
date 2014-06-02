@@ -18,7 +18,7 @@ class OSRMLoader
   def self.load_data
     puts "=== running osrm-datastore"
     puts "Time before running osrm-datastore: #{Time.now.to_f}"
-    self.osrm_up?
+    `#{BIN_PATH}/osrm-datastore --springclean`
     `#{BIN_PATH}/osrm-datastore #{@input_file}`
     puts "Time after running osrm-datastore:  #{Time.now.to_f}"
   end
